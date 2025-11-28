@@ -1,0 +1,39 @@
+#Wklejone Z Simulation
+
+loadrt comp names=comp_j0,comp_j1,comp_j2,comp_j3
+
+net J0homeswpos => comp_j0.in0
+net J1homeswpos => comp_j1.in0
+net J2homeswpos => comp_j2.in0
+net J3homeswpos => comp_j3.in0
+
+sets J0homeswpos 0
+sets J1homeswpos 0
+sets J2homeswpos 0
+sets J3homeswpos 0
+
+net xpos-cmd => comp_j0.in1
+net ypos-cmd => comp_j1.in1
+net zpos-cmd => comp_j2.in1
+net apos-cmd => comp_j3.in1
+
+setp comp_j0.hyst 0
+setp comp_j1.hyst 0
+setp comp_j2.hyst 0
+setp comp_j3.hyst 0
+
+# the X and Z joints share a home switch
+# the Y joints each have their own home switches
+#net home-x <= comp_j0.out
+net home-x <=  parport.1.pin-08-in-not
+#net home-y <= comp_j1.out 
+net home-y <= parport.0.pin-13-in
+#net home-z <= comp_j2.out
+net home-z <=  parport.1.pin-13-in-not
+#net home-a <= comp_j3.out 
+net home-a <= parport.1.pin-11-in
+
+addf comp_j0 servo-thread
+addf comp_j1 servo-thread
+addf comp_j2 servo-thread
+addf comp_j3 servo-thread

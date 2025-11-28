@@ -1,0 +1,7 @@
+# Include your custom HAL commands here
+# This file will not be overwritten when you run PNCconf again
+#loadrt sum2 count=1
+#net in1 axis.z.pos-cmd sum2.0.in0
+#net in2 sum2.0.in1 hm2_7i96s.0.encoder.00.position
+#setp sum2.0.gain1 -1
+#addf sum2.0 servo-thread

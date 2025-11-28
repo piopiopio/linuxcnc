@@ -1,0 +1,1 @@
+root_window.tk.call("wm","geometry",".","1920x1080")

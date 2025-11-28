@@ -1,0 +1,93 @@
+# Tutaj dodaj swoje polecenia HAL
+# Ten plik nie zostanie nadpisany gdy uruchomisz ponownie Stepconf
+
+
+#Copy z enctest.hal+modyfikacje
+
+
+loadrt encoder num_chan=4 
+
+#net
+net Asig0 parport.1.pin-02-in => encoder.0.phase-B
+net Bsig0 parport.1.pin-03-in => encoder.0.phase-A
+#net Zsig0 parport.1.pin-11-in-not => encoder.0.phase-Z
+
+net Asig1 parport.1.pin-06-in => encoder.1.phase-B
+net Bsig1 parport.1.pin-07-in => encoder.1.phase-A
+#net Zsig1 parport.1.pin-11-in-not => encoder.1.phase-Z
+
+net Asig2 parport.1.pin-05-in => encoder.2.phase-B
+net Bsig2 parport.0.pin-11-in => encoder.2.phase-A
+#net Zsig2 parport.1.pin-11-in-not => encoder.2.phase-Z
+
+net Asig3 parport.0.pin-15-in => encoder.3.phase-B
+net Bsig3 parport.1.pin-04-in => encoder.3.phase-A
+#net Zsig3 parport.1.pin-11-in-not => encoder.3.phase-Z
+
+setp encoder.0.index-enable 1
+setp encoder.0.position-scale 2
+setp encoder.1.index-enable 1
+setp encoder.1.position-scale 2
+setp encoder.2.index-enable 1
+setp encoder.2.position-scale 2
+setp encoder.3.index-enable 1
+setp encoder.3.position-scale 2
+
+# realtime thread/function links
+addf encoder.update-counters base-thread
+addf encoder.capture-position servo-thread
+
+
+# function checking for position error
+loadrt SecurityEncoderCheck count=4
+addf SecurityEncoderCheck.0 servo-thread 
+setp SecurityEncoderCheck.0.maxError 16
+setp SecurityEncoderCheck.0.factor 1
+addf SecurityEncoderCheck.1 servo-thread 
+setp SecurityEncoderCheck.1.maxError 16
+setp SecurityEncoderCheck.1.factor 1
+addf SecurityEncoderCheck.2 servo-thread 
+setp SecurityEncoderCheck.2.maxError 16
+setp SecurityEncoderCheck.2.factor 1
+addf SecurityEncoderCheck.3 servo-thread
+setp SecurityEncoderCheck.3.maxError 16
+setp SecurityEncoderCheck.3.factor 1
+
+net EncPosSig0 encoder.0.counts => SecurityEncoderCheck.0.encoderPosition
+net StepGenSig0 stepgen.0.counts => SecurityEncoderCheck.0.position
+net EncPosSig1 encoder.1.counts => SecurityEncoderCheck.1.encoderPosition
+net StepGenSig1 stepgen.1.counts => SecurityEncoderCheck.1.position
+net EncPosSig2 encoder.2.counts => SecurityEncoderCheck.2.encoderPosition
+net StepGenSig2 stepgen.2.counts => SecurityEncoderCheck.2.position
+net EncPosSig3 encoder.3.counts => SecurityEncoderCheck.3.encoderPosition
+net StepGenSig3 stepgen.3.counts => SecurityEncoderCheck.3.position
+
+setp encoder.0.reset 1
+setp encoder.1.reset 1
+setp encoder.2.reset 1
+setp encoder.3.reset 1
+
+# Load script to control camera zoom 
+#loadusr /home/piotr/shellScriptRun.py
+
+# Load script to control homing simulation
+#loadusr /home/piotr/HomingSimulator.py
+
+#Encoders index enable
+net xindex-enable <=> joint.0.index-enable
+net xindex-enable <=> encoder.0.index-enable
+net yindex-enable <=> joint.1.index-enable
+net yindex-enable <=> encoder.1.index-enable
+net zindex-enable <=> joint.2.index-enable
+net zindex-enable <=> encoder.2.index-enable
+#net aindex-enable <=> joint.3.index-enable
+#net aindex-enable <=> encoder.3.index-enable
+net yindex-enable => encoder.3.index-enable
+
+# Load the Huanyang VFD user component
+loadusr -Wn spindle-vfd hy_vfd -n spindle-vfd -t 1 -d /dev/ttyUSB0 -p none -r 38400 -s 1
+net spindle-fwd spindle.0.forward => spindle-vfd.spindle-forward
+net spindle-reverse spindle.0.reverse => spindle-vfd.spindle-reverse
+net spindle-speed-cmd  spindle.0.speed-out-abs => spindle-vfd.speed-command
+net spindle-on spindle.0.on => spindle-vfd.spindle-on
+net spindle-at-speed spindle.0.at-speed => spindle-vfd.spindle-at-speed

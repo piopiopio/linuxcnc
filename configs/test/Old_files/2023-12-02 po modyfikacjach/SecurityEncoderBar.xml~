@@ -1,0 +1,145 @@
+<pyvcp>
+  
+<hbox>
+
+	<label>
+		<text>"Spindle Modbus status:"</text>
+	</label>
+	<led>
+		<halpin>"hycomm-ok"</halpin>
+		<on_color>"green"</on_color>
+		<off_color>"orange"</off_color>
+	</led>
+</hbox>	
+<hbox>
+		<label>
+		<text>"Spindle at speed:"</text>
+	</label>
+	<led>
+		<halpin>"spindle-at-speed"</halpin>
+		<on_color>"green"</on_color>
+		<off_color>"orange"</off_color>
+	</led>
+	<label>
+		<text>" "</text>
+	</label>
+
+</hbox>	
+<hbox>	
+	<label>
+		<text>"RPM"</text>
+	</label>
+	<bar>
+		<halpin>"spindle-speed"</halpin>
+		<max_>24000</max_>
+	</bar>
+</hbox>
+<hbox>
+    	<label>
+        	<text>"X:  "</text>
+    	</label>
+    	<bar>
+       	 	<halpin>"errorValue0"</halpin>
+		<min_>-16</min_>
+        	<max_>16</max_>
+		<range1>(-8,8,"green")</range1>
+		<range2>(-5000,-8,"red")</range2>
+		<range3>(8,5000,"red")</range3>
+    	</bar>
+</hbox>
+
+
+<hbox>
+    	<label>
+        	<text>"Y1:"</text>
+    	</label>
+    	<bar>
+       	 	<halpin>"errorValue1"</halpin>
+		<min_>-16</min_>
+        	<max_>16</max_>
+		<range1>(-8,8,"green")</range1>
+		<range2>(-5000,-8,"red")</range2>
+		<range3>(8,5000,"red")</range3>
+    	</bar>
+</hbox>
+
+<hbox>
+    	<label>
+        	<text>"Y2:"</text>
+    	</label>
+    	<bar>
+       	 	<halpin>"errorValue2"</halpin>
+		<min_>-16</min_>
+        	<max_>16</max_>
+		<range1>(-8,8,"green")</range1>
+		<range2>(-5000,-8,"red")</range2>
+		<range3>(8,5000,"red")</range3>
+    	</bar>
+</hbox>
+
+<hbox>
+    	<label>
+        	<text>"Z:  "</text>
+    	</label>
+    	<bar>
+       	 	<halpin>"errorValue3"</halpin>
+		<min_>-16</min_>
+        	<max_>16</max_>
+		<range1>(-8,8,"green")</range1>
+		<range2>(-5000,-8,"red")</range2>
+		<range3>(8,5000,"red")</range3>
+    	</bar>
+</hbox>
+
+
+ <hbox>
+     <label>
+     <text>" "</text>
+  </label>
+</hbox>
+
+<hbox>
+     <label>
+     <text>" "</text>
+  </label>
+</hbox>
+
+<hbox>
+     <label>
+     <text>" "</text>
+  </label>
+</hbox>
+
+
+<hbox>
+  <label>
+      <text>"_____________________"</text>
+  </label>
+</hbox>
+
+
+
+<hbox>
+  <label>
+    <text>"Camera options:"</text>
+   </label>
+</hbox>
+
+<hbox>
+<label>
+  <text>"Camera zoom level value:"</text>
+</label>
+<spinbox>  
+    <halpin>"Zoom"</halpin>
+    <min_>1</min_>
+    <max_>3</max_>
+    <initval>1</initval>
+    <resolution>1</resolution>    
+    <format>"1.0f"</format>
+    <font>("Arial",20)</font>
+    <width>2</width>
+</spinbox>
+</hbox>
+
+
+</pyvcp>

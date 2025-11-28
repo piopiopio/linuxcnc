@@ -1,0 +1,83 @@
+#loadusr sim_pin home-x
+#loadusr sim_pin home-y
+#loadusr sim_pin home-z
+#loadusr sim_pin home-a
+
+#loadusr sim_pin encoder.0.phase-Z
+#loadusr sim_pin encoder.1.phase-Z
+#loadusr sim_pin encoder.2.phase-Z
+#loadusr sim_pin encoder.3.phase-Z
+
+
+#MotorErrorBar
+loadrt conv_s32_float count=4
+addf conv-s32-float.0 servo-thread
+net ErrorValueS32Sig0 SecurityEncoderCheck.0.errorValue => conv-s32-float.0.in
+net ErrorValueFloafSig0 conv-s32-float.0.out => pyvcp.errorValue0
+net CtiticalError0 SecurityEncoderCheck.0.status => pyvcp.status0
+setp SecurityEncoderCheck.0.config 12
+net MotionType motion.motion-type => SecurityEncoderCheck.0.motiontype
+
+addf conv-s32-float.1 servo-thread
+net ErrorValueS32Sig1 SecurityEncoderCheck.1.errorValue => conv-s32-float.1.in
+net ErrorValueFloafSig1 conv-s32-float.1.out => pyvcp.errorValue1
+net CtiticalError1 SecurityEncoderCheck.1.status => pyvcp.status1
+setp SecurityEncoderCheck.1.config 12
+net MotionType motion.motion-type => SecurityEncoderCheck.1.motiontype
+
+addf conv-s32-float.2 servo-thread
+net ErrorValueS32Sig2 SecurityEncoderCheck.2.errorValue => conv-s32-float.2.in
+net ErrorValueFloafSig2 conv-s32-float.2.out => pyvcp.errorValue2
+net CtiticalError2 SecurityEncoderCheck.2.status => pyvcp.status2
+setp SecurityEncoderCheck.2.config 12
+net MotionType motion.motion-type => SecurityEncoderCheck.2.motiontype
+
+addf conv-s32-float.3 servo-thread
+net ErrorValueS32Sig3 SecurityEncoderCheck.3.errorValue => conv-s32-float.3.in
+net ErrorValueFloafSig3 conv-s32-float.3.out => pyvcp.errorValue3
+net CtiticalError3 SecurityEncoderCheck.3.status => pyvcp.status3
+setp SecurityEncoderCheck.3.config 12
+net MotionType motion.motion-type => SecurityEncoderCheck.3.motiontype
+
+setp encoder.0.reset 0
+setp encoder.1.reset 0
+setp encoder.2.reset 0
+setp encoder.3.reset 0
+
+
+##net ZoomSignal pyvcp.Zoom => shellScriptRun.in
+
+
+#Huanyang VFD
+
+net spindle-at-speed => pyvcp.spindle-at-speed
+net pyvcp-spindle-rpm spindle-vfd.spindle-speed-fb => pyvcp.spindle-speed
+net pyvcp-modbus-ok spindle-vfd.hycomm-ok => pyvcp.hycomm-ok
+
+# Include your customized HAL commands here
+# The commands in this file are run after the AXIS GUI (including PyVCP panel) starts
+
+# HAL connections for Panel Display
+net pyvcp-spindle-rpm => gladevcp.spindle-speed
+net hy-AMPS <= spindle-vfd.OutA => gladevcp.amp-meter
+net hy-Base-Freq <= spindle-vfd.base-freq => gladevcp.base-freq
+net hy-Max-Freq <= spindle-vfd.max-freq => gladevcp.max-freq
+net hy-Freq-Lower <= spindle-vfd.freq-lower-limit => gladevcp.freq-lower-limit
+net hy-Motor-Voltage <= spindle-vfd.rated-motor-voltage => gladevcp.rated-motor-voltage
+net hy-Motor-Current <= spindle-vfd.rated-motor-current => gladevcp.rated-motor-current
+net hy-Motor-Poles <= spindle-vfd.motor-poles => gladevcp.motor-pole-number
+net hy-Motor-Rev <= spindle-vfd.rated-motor-rev => gladevcp.rated-motor-rev
+net pyvcp-modbus-ok => gladevcp.modbus-ok
+#net hy-Freq-Cmd <= spindle-vfd.frequency-command => gladevcp.frequency-command
+
+net hy-CNST-Run <= spindle-vfd.CNST-run => gladevcp.CNST-run
+net hy-CNST-Jog <= spindle-vfd.CNST-jog => gladevcp.CNST-jog
+net hy-CNST-Command-rf <= spindle-vfd.CNST-command-rf => gladevcp.CNST-command-rf
+net hy-CNST-Runnning <= spindle-vfd.CNST-running => gladevcp.CNST-running
+net hy-CNST-Jogging <= spindle-vfd.CNST-jogging => gladevcp.CNST-jogging
+net hy-CNST-Running-rf <= spindle-vfd.CNST-running-rf => gladevcp.CNST-running-rf
+net hy-CNST-Bracking <= spindle-vfd.CNST-bracking => gladevcp.CNST-bracking
+net hy-CNST-Track-Start <= spindle-vfd.CNST-track-start => gladevcp.CNST-track-start
+
+# now enable the VFD after EMC is up and running
+setp spindle-vfd.enable 1

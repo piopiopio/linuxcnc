@@ -1,0 +1,16 @@
+# Include your custom_postgui HAL commands here
+# This file will not be overwritten when you run PNCconf again
+
+#printNCProbe start
+net tool-change iocontrol.0.tool-change => hal_manualtoolchange.change
+net tool-changed iocontrol.0.tool-changed <= hal_manualtoolchange.changed
+net tool-number iocontrol.0.tool-prep-number => hal_manualtoolchange.number
+net tool-prepare-loopback iocontrol.0.tool-prepare => iocontrol.0.tool-prepared
+#printNCProbe end
+
+# **** Setup of spindle speed display using pyvcp -START ****
+
+net spindle-fb-rpm-abs-filtered       =>   pyvcp.spindle-speed
+net spindle-at-speed        =>    pyvcp.spindle-at-speed-led
+
+# **** Setup of spindle speed display using pyvcp -END ****

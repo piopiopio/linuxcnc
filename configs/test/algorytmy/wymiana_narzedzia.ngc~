@@ -1,0 +1,58 @@
+O <wymiana_narzedzia> sub
+#<_ActualMeasureZ> = 0         											        (Tworzy parametr <_ActualMeasureZ>)
+
+O100 IF [ EXISTS[#<_FirstTool>] EQ 0 ]									        (Jeśli nie istnieje parametr flaga <_FirstTool>)
+#<_FirstTool> = 0													            (Tworzy flagę <_FirstTool> i przypisuje jej wartość 0)
+O100 ENDIF
+T1
+M70																				(Zapisuje aktualny stan)
+G21																				(Jednostką odległości są [mm])
+G94                                            									(Jednostką ruchu jest [jednostka/min])
+G90																				(Programowanie absolutne)
+G53 G0 Z-0.01																	(Podnosi oś Z do bezpiecznej wysokości - w tym przypadku maksymalna wysokość = 0)
+G53 G0 X#<_ini[TOOL_CHANGE_POS]X> Y#<_ini[TOOL_CHANGE_POS]Y>					(Przesówa w osi X i Y do zdefiniowanego punktu wymiany narzędzia)
+G53 G0 Z#<_ini[TOOL_CHANGE_POS]Z>												(Przesówa w osi Z do zdefiniowanego punktu wymiany narzędzia)
+M100 P0																			(Wyświetla komunikat aby zamontować/zmienić narzędzie. Czeka na kliknięcie "Kontynuuj")
+G53 G0 Z-0.01																	(Podnosi oś Z do bezpiecznej wysokości - w tym przypadku maksymalna wysokość = 0)																
+G53 G0 X#<_ini[TOOLSENSOR]X> Y#<_ini[TOOLSENSOR]Y>								(Przesówa w osi X i Y do zdefiniowanego punktu pomiaru długości narzędzia)
+G53 G0 Z#<_ini[TOOLSENSOR]Z>													(Przesówa w osi Z do zdefiniowanego punktu pomiaru długości narzędzia)
+(M100 P1)																		    (Wyświetla komunikat aby zamontować czujnik. Czeka na kliknięcie "Kontynuuj")
+G91																				(Programowanie przyrostowe)
+O200 IF [ #<_FirstTool> EQ 0 ]													(Jesli pomiar pierwszego narzędzia)
+	#<START_Z> = #5422															(Zapisuje aktualną wartośc z osi Z uwzględniając offsety)
+	G38.3 Z-#<_ini[TOOLSENSOR]MAX_CHANGE> F400									(Obniża narzędzie do momentu kontaktu)
+	#<STOP_Z> = #5063															(Odczytuje wynik pomiaru)
+	G38.5 Z10 F50																(Podnosi narzędzie do utracenia kontaktu)	
+	#<STOP_Z> = #5063															(Odczytuje wynik pomiaru)
+	#<_FirstMeasureZ> = [#<STOP_Z> - #<START_Z>]								(Zapisuje wynik pierwszego pomiaru w osi Z)	
+	(debug, Zmierzono pierwsze narzedzie = #<_FirstMeasureZ>)					(Wyświetla wynik pomiaru pierwszego narzędzia)
+O200 ELSE																		(Jesli pomiar kolejnego narzedzia)	
+	#<START_Z> = #5422															(Zapisuje aktualną wartośc z osi Z uwzględniając offsety)
+	G38.3 Z-#<_ini[TOOLSENSOR]MAX_CHANGE> F400									(Obniża narzędzie do momentu kontaktu)
+	#<STOP_Z> = #5063															(Odczytuje wynik pomiaru)
+	G38.5 Z10 F50																(Podnosi narzędzie do utracenia kontaktu)	
+	#<STOP_Z> = #5063															(Odczytuje wynik pomiaru)
+	#<_ActualMeasureZ> =  [#<STOP_Z> - #<START_Z>]								(Zapisuje wynik aktualnego pomiaru w osi Z)	
+	(debug, Zmierzono kolejne narzedzie = #<_ActualMeasureZ>)					(Wyświetla wynik pomiaru kolejnego narzędzia)
+O200 ENDIF
+
+G90																				(Programowanie absolutne)
+G53 G0 Z#<_ini[TOOLSENSOR]Z>													(Podnosi oś Z do zdefiniowanego punktu czujnika)
+(M100 P2)																		    (Wświetla komunikat aby zdemontować/zabezpieczyć czujnik)
+G53 G0 Z #<_ini[AFTER_CHANGE_POSITION]z>										(Przesówa oś Z do zdefiniowanego punktu po wymianie narzędzia)
+M72																				(Przywraca zapisany stan)
+
+O300 IF [ #<_FirstTool> EQ 0 ]													(Jesli pomiar pierwszego narzędzia)
+	#<_FirstTool> = 1 															(Ustawia flagę, że pierwsze narzędzie zmierzozno)
+	G10 L1 P1 R0.25 Z#<_FirstMeasureZ>											(Wpisuje offset Z do tablicy narzędzi)
+	G43 H1																		(Włącza kompensację długości narzędzia dla narzędzia 1)
+	(msg, Narzedzie pierwsze gotowe)											(Wyświetla komunikat, że narzędzie gotowe)
+O300 ELSE
+	G10 L1 P1 R0.25 Z#<_ActualMeasureZ>											(Wpisuje offset Z do tablicy narzędzi)
+	G43 H1																		(Włącza kompensację długości narzędzia dla narzędzia 1)
+	(G43.1 Z#<_ActualOffsetZ>)													(Ponownie ustawia dynamicznie offset długości aktualnego narzędzia)
+	(msg, Narzedzie kolejne gotowe)					
+O300 ENDIF
+
+O <wymiana_narzedzia> endsub
+m2

@@ -1,0 +1,4 @@
+# Tutaj dodaj swoje polecenia HAL
+# Polecenia w tym pliku są wykonywane po uruchomieniu AXIS GUI (włączając panel PyVCP)
+
+sets spindle-at-speed true
